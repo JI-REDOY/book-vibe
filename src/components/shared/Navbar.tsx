@@ -30,7 +30,7 @@ const Navbar = () => {
 
             <li>
               <Link
-                href=""
+                href="/listedBooks"
                 className="font-medium text-[#172033] hover:bg-transparent hover:text-[#C98B3C]"
               >
                 Listed Books
