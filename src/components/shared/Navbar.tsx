@@ -39,7 +39,7 @@ const Navbar = () => {
 
             <li>
               <Link
-                href="/read"
+                href="/readBooks"
                 className="font-medium text-[#172033] hover:bg-transparent hover:text-[#C98B3C]"
               >
                 Pages to Read
