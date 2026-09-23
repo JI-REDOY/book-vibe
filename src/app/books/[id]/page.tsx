@@ -6,7 +6,7 @@ import ReadButton from "@/components/bookDetails/ReadButton";
 import WishlistButton from "@/components/bookDetails/WishlistButton";
 
 const getBook = async (id: string): Promise<IBook> => {
-    const res = await fetch("http://localhost:3000/booksData.json");
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`);
 
     if (!res.ok) {
         throw new Error("Failed to fetch books");
