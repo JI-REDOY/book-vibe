@@ -3,17 +3,25 @@ import BookCard from "@/components/shared/BookCard";
 import { IBook } from "@/types/book.types";
 
 const getBooks = async (): Promise<IBook[]> => {
-    const res = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`
-    );
-
-    if (!res.ok) {
-        throw new Error("Failed to fetch books");
+    try {
+        if (process.env.NEXT_PUBLIC_SERVER_BASE_URL) {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`
+            );
+            if (res.ok) {
+                const data: IBook[] = await res.json();
+                return data;
+            }
+        }
+    } catch {
+        // Fallback to local file if fetch fails during build/prerender
     }
 
-    const data: IBook[] = await res.json();
-
-    return data;
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const filePath = path.join(process.cwd(), "public", "booksData.json");
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent);
 };
 
 const BooksPage = async () => {

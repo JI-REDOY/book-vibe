@@ -6,13 +6,28 @@ import ReadButton from "@/components/bookDetails/ReadButton";
 import WishlistButton from "@/components/bookDetails/WishlistButton";
 
 const getBook = async (id: string): Promise<IBook> => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`);
+    let books: IBook[] = [];
 
-    if (!res.ok) {
-        throw new Error("Failed to fetch books");
+    try {
+        if (process.env.NEXT_PUBLIC_SERVER_BASE_URL) {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`
+            );
+            if (res.ok) {
+                books = await res.json();
+            }
+        }
+    } catch {
+        // Fallback to local file if fetch fails
     }
 
-    const books: IBook[] = await res.json();
+    if (!books.length) {
+        const fs = await import("fs/promises");
+        const path = await import("path");
+        const filePath = path.join(process.cwd(), "public", "booksData.json");
+        const fileContent = await fs.readFile(filePath, "utf-8");
+        books = JSON.parse(fileContent);
+    }
 
     const book = books.find(
         (book) => book.bookId === Number(id)
