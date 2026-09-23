@@ -1,18 +1,28 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import BookCard from "../shared/BookCard";
 import { IBook } from "@/types/book.types";
 
-const getBooks = async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`);
-
-    if (!res.ok) {
-        throw new Error("Failed to fetch books");
+const getBooks = async (): Promise<IBook[]> => {
+    try {
+        if (process.env.NEXT_PUBLIC_SERVER_BASE_URL) {
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_SERVER_BASE_URL}/booksData.json`
+            );
+            if (res.ok) {
+                const data: IBook[] = await res.json();
+                return data;
+            }
+        }
+    } catch {
+        // Fallback to local file if fetch fails
     }
 
-    const data = await res.json();
-    return data;
+    const fs = await import("fs/promises");
+    const path = await import("path");
+    const filePath = path.join(process.cwd(), "public", "booksData.json");
+    const fileContent = await fs.readFile(filePath, "utf-8");
+    return JSON.parse(fileContent);
 };
 
 const Books = async () => {
